@@ -22,6 +22,8 @@
 #include "esp_system.h"
 #include "dht11.h"
 
+#define DEBUG		     0
+
 #define GPIO_OUTPUT_IO_0     5
 #define GPIO_OUTPUT_IO_1     4
 #define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_1))
@@ -302,7 +304,8 @@ void dht11_working(void)
 
                 // 串口输出温湿度
                 //---------------------------------------------------------------------------------
-                if(dht11_data_array[5] == 1)                    // 温度 >= 0℃
+#if DEBUG
+		if(dht11_data_array[5] == 1)                    // 温度 >= 0℃
                 {
                         printf("hum  == %d.%d\n",dht11_data_array[0],dht11_data_array[1]);
                         printf("temp == %d.%d\n", dht11_data_array[2],dht11_data_array[3]);
@@ -312,7 +315,7 @@ void dht11_working(void)
                         printf("hum  == %d.%d\n",dht11_data_array[0],dht11_data_array[1]);
                         printf("temp == %d.%d\n",dht11_data_array[2],dht11_data_array[3]);
                 }
-
+#endif
                 // OLED显示温湿度
                 //---------------------------------------------------------------------------------
                 dht11_data_tostring();  // DHT11数据值转成字符串
