@@ -134,7 +134,7 @@ config CONSOLE_UART_NUM
 config CONSOLE_UART_BAUDRATE
     int "UART console baud rate"
     depends on CONSOLE_UART_DEFAULT || CONSOLE_UART_CUSTOM
-    default 74880
+    default 115200
     range 1200 4000000
 
 config UART0_SWAP_IO

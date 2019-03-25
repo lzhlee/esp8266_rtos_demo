@@ -149,7 +149,7 @@ httpd_uri_t echo = {
     .uri       = "/echo",
     .method    = HTTP_POST,
     .handler   = echo_post_handler,
-    .user_ctx  = NULL
+    .user_ctx  = "fuckyou"
 };
 
 /* An HTTP PUT handler. This demonstrates realtime
@@ -188,7 +188,7 @@ httpd_uri_t ctrl = {
     .uri       = "/ctrl",
     .method    = HTTP_PUT,
     .handler   = ctrl_put_handler,
-    .user_ctx  = NULL
+    .user_ctx  = "gxnnms198832"
 };
 
 httpd_handle_t start_webserver(void)

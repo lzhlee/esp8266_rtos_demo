@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-
+#include "rom/ets_sys.h"
 #include "esp_system.h"
 
 /******************************************************************************
@@ -18,5 +18,8 @@
 *******************************************************************************/
 void app_main(void)
 {
-    printf("SDK version:%s\n", esp_get_idf_version());
+    while(1){
+    	printf("SDK version:%s\n", "Testing ........");
+	ets_delay_us(50000000);
+    }
 }
