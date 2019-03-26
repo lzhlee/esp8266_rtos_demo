@@ -20,21 +20,22 @@
 #include "esp_system.h"
 #include "esp_err.h"
 
+#include "driver/gpio.h"
+
 #include "oled.h"
 #include "dht11.h"
-#include "pcf8591.h"
 
 static const char *TAG = "oled";
 
 extern void gpio_init(void);
 extern void dht11_working(void);
-extern unsigned char * get_data_string(char select);
-extern void iic_pcf8591_init(void);
-extern uint16_t pcf8591_adc_read(void);
+extern uint8_t get_data(char select);
+extern uint8_t * get_data_string(char select);
 extern void OLED_Init(void);
 extern void OLED_ShowChar(unsigned char x, unsigned char y, unsigned char Show_char);
 extern void OLED_ShowString(unsigned char x, unsigned char y, unsigned char * Show_char);
 extern void OLED_ShowIP(unsigned char x, unsigned char y, unsigned char*Array_IP);
+extern uint8_t i2c0_pcf8591_adc_read(void);
 
 void delay_ms(int C_time)
 {	for(;C_time>0;C_time--)
@@ -46,7 +47,6 @@ static void oled_task_example(void *arg)
 	int val = 0;
 	unsigned char dat[3]={0};
 //--------------------------------
-	iic_pcf8591_init();
 	OLED_Init();	// OLED初始化
 // OLED显示字符串
 //-------------------------------------------------------------------------------------------------------------------------
@@ -69,11 +69,17 @@ static void oled_task_example(void *arg)
 	dht11_working();
 	OLED_ShowString(0,2,get_data_string(1));
 	OLED_ShowString(0,4,get_data_string(0));
-	val = pcf8591_adc_read();
-	dat[0] = val/1000;
-	dat[1] = val%1000/100;
-	dat[2] = val%100/10;
+	val = i2c0_pcf8591_adc_read();
+	dat[0] = ((255-val)*80/255)/10 + 48;
+	dat[1] = ((255-val)*80/255)%10 + 48;
+	dat[2] = 'C';
 	OLED_ShowString(0,6,dat);
+	if(get_data(1) > ((255-val)*80/255)){
+		gpio_set_level(4,0);
+	}else{
+		gpio_set_level(4,1);
+	}
+	
     	vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }

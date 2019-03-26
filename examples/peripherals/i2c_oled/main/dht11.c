@@ -24,10 +24,6 @@
 
 #define DEBUG		     0
 
-#define GPIO_OUTPUT_IO_0     5
-#define GPIO_OUTPUT_IO_1     4
-#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_1))
-
 void dht11_delay_ms(uint32_t C_time)
 {	
 	for(;C_time>0;C_time--)
@@ -271,7 +267,7 @@ void dht11_data_tostring(void)
 	//…………………………………………………………………………………………
 }
 
-unsigned char * get_data_string(char select)
+uint8_t * get_data_string(char select)
 {
 	if(select == 0) {
 		return dht11_data_char[0];
@@ -279,6 +275,15 @@ unsigned char * get_data_string(char select)
 		return dht11_data_char[1];
 	}
 }
+
+uint8_t get_data(char select)
+{
+        if(select == 0) {
+                return dht11_data_array[0];
+        } else {
+                return dht11_data_array[2];
+        }
+} 
 
 void dht11_working(void)
 {
@@ -296,11 +301,11 @@ void dht11_working(void)
 
                 // 温度超过30℃，LED亮
                 //----------------------------------------------------
-                if(dht11_data_array[5]==1 && dht11_data_array[2]>=30)
+                /*if(dht11_data_array[5]==1 && dht11_data_array[2]>=30)
                         gpio_set_level(GPIO_OUTPUT_IO_1,0);             // LED亮
                 else
                         gpio_set_level(GPIO_OUTPUT_IO_1,1);             // LED灭
-
+		*/
 
                 // 串口输出温湿度
                 //---------------------------------------------------------------------------------

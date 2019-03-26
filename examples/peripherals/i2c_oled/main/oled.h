@@ -3,9 +3,14 @@
 
 // 头文件引用
 //==============================================================================
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+
+#include "esp_log.h"
+#include "esp_system.h"
+#include "esp_err.h"
+
 #include "i2c_oled_master.h"	// IIC
 //==============================================================================
 
@@ -44,6 +49,7 @@ void OLED_ShowChar(unsigned char x, unsigned char y, unsigned char Show_char);
 
 void OLED_ShowString(unsigned char x, unsigned char y, unsigned char * Show_char);
 
+uint8_t i2c0_pcf8591_adc_read(void);
 //=============================================================================
 
 #endif /* OLED_H_ */
