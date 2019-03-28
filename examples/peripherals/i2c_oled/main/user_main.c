@@ -42,12 +42,17 @@ void delay_ms(int C_time)
 		os_delay_us(1000);
 }
 
+void esp8266_init(void)
+{
+	gpio_init();
+	OLED_Init();
+}
+
 static void oled_task_example(void *arg)
 {
 	int val = 0;
-	unsigned char dat[3]={0};
+	uint8_t dat[3]={0};
 //--------------------------------
-	OLED_Init();	// OLED初始化
 // OLED显示字符串
 //-------------------------------------------------------------------------------------------------------------------------
 	OLED_ShowString(0,0,(unsigned char *)"Project=");		// 从(0,0)开始显示
@@ -55,38 +60,33 @@ static void oled_task_example(void *arg)
 //-------------------------------------------------------------------------------------------------------------------------
 // OLED显示【点分十进制_IP地址】
 //-------------------------------------------------------------------------------------------------------------------------
-	unsigned char IP_Address[4];
-	   IP_Address[0] = 192;
-	   IP_Address[1] = 168;
-	   IP_Address[2] = 4;
-	   IP_Address[3] = 1;
-//	OLED_ShowString(0,2,(unsigned char *)"IP:");				// 从(0,2)开始显示		// 因为【Project=IIC_OLED】在纵向上占用了【2】页(2*8个点)
-//	OLED_ShowIP(24, 2, IP_Address);			// 从(24,2)开始显示		// 因为，【IP:】一共3个字符，横向上占用【24】个点
-//	OLED_ShowString(0,4,(unsigned char *)"0123456789ABCDEFGHIJKLMN");	// 从(0,4)开始显示
-														// 因为【Project=IIC_OLED】【IP:192.168.4.1】在纵向上占用了【4】页(4*8个点)
-    while(1)
-    {
-	dht11_working();
-	OLED_ShowString(0,2,get_data_string(1));
-	OLED_ShowString(0,4,get_data_string(0));
-	val = i2c0_pcf8591_adc_read();
-	dat[0] = ((255-val)*80/255)/10 + 48;
-	dat[1] = ((255-val)*80/255)%10 + 48;
-	dat[2] = 'C';
-	OLED_ShowString(0,6,dat);
-	if(get_data(1) > ((255-val)*80/255)){
-		gpio_set_level(4,0);
-	}else{
-		gpio_set_level(4,1);
+	uint8_t IP_Address[4];
+	IP_Address[0] = 192;
+	IP_Address[1] = 168;
+	IP_Address[2] = 4;
+	IP_Address[3] = 1;
+	while(1)
+	{
+		dht11_working();
+		OLED_ShowString(0,2,get_data_string(1));
+		OLED_ShowString(0,4,get_data_string(0));
+		val = i2c0_pcf8591_adc_read();
+		dat[0] = ((255-val)*80/255)/10 + 48;
+		dat[1] = ((255-val)*80/255)%10 + 48;
+		dat[2] = 'C';
+		OLED_ShowString(0,6,dat);
+		if(get_data(1) > ((255-val)*80/255)){
+			gpio_set_level(4,0);
+		}else{
+			gpio_set_level(4,1);
+		}
+    		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
-	
-    	vTaskDelay(100 / portTICK_PERIOD_MS);
-    }
 }
 
 void app_main(void)
 {
     //start i2c task
-    gpio_init();
-    xTaskCreate(oled_task_example, "oled_task_example", 2048, NULL, 10, NULL);
+  esp8266_init();
+  xTaskCreate(oled_task_example, "oled_task_example", 2048, NULL, 10, NULL);
 }
