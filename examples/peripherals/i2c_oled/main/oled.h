@@ -49,7 +49,7 @@ void OLED_ShowChar(unsigned char x, unsigned char y, unsigned char Show_char);
 
 void OLED_ShowString(unsigned char x, unsigned char y, unsigned char * Show_char);
 
-uint8_t i2c0_pcf8591_adc_read(void);
+uint8_t i2c0_pcf8591_adc_read(uint8_t ch);
 //=============================================================================
 
 #endif /* OLED_H_ */

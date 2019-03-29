@@ -240,14 +240,14 @@ void OLED_ShowIP(unsigned char x, unsigned char y, unsigned char*Array_IP)
 	}
 }
 //-----------------------------------------------------------------------------
-uint8_t i2c0_pcf8591_adc_read(void)
+uint8_t i2c0_pcf8591_adc_read(uint8_t ch)
 {
         int val = 0;
         i2c_oled_master_start();                                 // 发送起始信号
         i2c_oled_master_writeByte(0x90);                 // 选择总线上的OLED[0111 100X B]
         if(i2c_oled_master_checkAck()==0)
         {i2c_oled_master_stop(); return 0;}
-        i2c_oled_master_writeByte(0x41);                 // [0x00]表示下一字节写入的是[指令]
+        i2c_oled_master_writeByte(0x40+ch);                 // [0x00]表示下一字节写入的是[指令]
         if(i2c_oled_master_checkAck()==0)
         {i2c_oled_master_stop(); return 0;}
         i2c_oled_master_stop();

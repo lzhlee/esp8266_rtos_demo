@@ -28,6 +28,7 @@
 static const char *TAG = "oled";
 
 extern void gpio_init(void);
+extern void gpio_init1(void);
 extern void dht11_working(void);
 extern uint8_t get_data(char select);
 extern uint8_t * get_data_string(char select);
@@ -35,7 +36,7 @@ extern void OLED_Init(void);
 extern void OLED_ShowChar(unsigned char x, unsigned char y, unsigned char Show_char);
 extern void OLED_ShowString(unsigned char x, unsigned char y, unsigned char * Show_char);
 extern void OLED_ShowIP(unsigned char x, unsigned char y, unsigned char*Array_IP);
-extern uint8_t i2c0_pcf8591_adc_read(void);
+extern uint8_t i2c0_pcf8591_adc_read(uint8_t ch);
 
 void delay_ms(int C_time)
 {	for(;C_time>0;C_time--)
@@ -45,13 +46,14 @@ void delay_ms(int C_time)
 void esp8266_init(void)
 {
 	gpio_init();
+	gpio_init1();
 	OLED_Init();
 }
 
 static void oled_task_example(void *arg)
 {
-	int val = 0;
-	uint8_t dat[3]={0};
+	int val_t = 0, val_h = 0;
+	uint8_t dat_t[3]={0}, dat_h[5]={0};
 //--------------------------------
 // OLED显示字符串
 //-------------------------------------------------------------------------------------------------------------------------
@@ -70,16 +72,28 @@ static void oled_task_example(void *arg)
 		dht11_working();
 		OLED_ShowString(0,2,get_data_string(1));
 		OLED_ShowString(0,4,get_data_string(0));
-		val = i2c0_pcf8591_adc_read();
-		dat[0] = ((255-val)*80/255)/10 + 48;
-		dat[1] = ((255-val)*80/255)%10 + 48;
-		dat[2] = 'C';
-		OLED_ShowString(0,6,dat);
-		if(get_data(1) > ((255-val)*80/255)){
-			gpio_set_level(4,0);
+		memset(dat_t,0,3);
+		val_t = i2c0_pcf8591_adc_read(0);
+		dat_t[0] = ((255-val_t)*80/255)/10 + 48;
+		dat_t[1] = ((255-val_t)*80/255)%10 + 48;
+		dat_t[2] = 'C';
+		OLED_ShowString(0,6,dat_t);
+		if(get_data(1) > ((255-val_t)*80/255)){
+			gpio_set_level(12,0);
 		}else{
-			gpio_set_level(4,1);
+			gpio_set_level(12,1);
 		}
+		memset(dat_t,0,3);
+                val_h = i2c0_pcf8591_adc_read(1);
+                dat_t[0] = ((255-val_h)*100/255)/10 + 48;
+                dat_t[1] = ((255-val_h)*100/255)%10 + 48;
+                dat_t[2] = '%';
+                OLED_ShowString(64,6,dat_t);
+                if(get_data(0) > ((255-val_h)*100/255)){
+                        gpio_set_level(4,0);
+                }else{
+                        gpio_set_level(4,1);
+                }
     		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }
